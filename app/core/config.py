@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     DB_NAME: str = "flights-reserves"
 
     # Other Services (microservice endpoints, etc.)
-    FLIGHT_SERVICE_URL: str = "http://localhost:8000"
+    FLIGHT_SERVICE_URL: str = "http://localhost:8001"
 
     class Config:
         env_file = ".env"

@@ -10,15 +10,18 @@ class FlightArriving(BaseModel):
     airport: str
 
 class FlightBase(BaseModel):
-    flight_id: str
+    id: str = Field(..., alias="_id")
     departure: FlightDeparture
     arriving: FlightArriving
     airline: str
     airplane: str
 
 class FlightInDB(FlightBase):
-    id: str = Field(..., alias="flight_id")
+    id: str = Field(..., alias="_id")
 
     class Config:
         from_attributes = True
         validate_by_name = True
+
+class FlightPublic(FlightBase):
+    id: str = Field(..., alias="_id")

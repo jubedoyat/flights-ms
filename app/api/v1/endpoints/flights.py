@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Query
-from app.models.flight import FlightBase
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from app.models.flight import FlightBase, FlightPublic
 from app.db.repositories.flight_repo import FlightRepository
 from app.db.mongodb import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -12,6 +13,22 @@ async def get_all_flights(db: AsyncIOMotorDatabase = Depends(get_database)):
     repo = FlightRepository(db)
     flights = await repo.get_all_flights()
     return flights
+
+@router.get("/{flight_id}", response_model=FlightPublic)
+async def get_flight_by_id(
+    flight_id: str = Path(..., description="MongoDB ObjectID of the flight"),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    if not ObjectId.is_valid(flight_id):
+        raise HTTPException(status_code=400, detail="Invalid flight ID")
+
+    flight = await db["Flights"].find_one({"_id": ObjectId(flight_id)})
+
+    if not flight:
+        raise HTTPException(status_code=404, detail="Flight not found")
+
+    flight["_id"] = str(flight["_id"])
+    return FlightPublic(**flight)
 
 @router.get("/search", response_model=List[FlightBase])
 async def search_flights(

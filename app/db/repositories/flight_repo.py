@@ -9,7 +9,7 @@ class FlightRepository:
     async def get_all_flights(self):
         flights = []
         async for doc in self.collection.find():
-            doc["flight_id"] = str(doc["flight_id"])
+            doc["_id"] = str(doc["_id"])
             flights.append(FlightInDB(**doc))
         return flights
 
@@ -30,7 +30,7 @@ class FlightRepository:
 
         flights = []
         async for doc in self.collection.find(query):
-            doc["flight_id"] = str(doc["flight_id"])
+            doc["_id"] = str(doc["_id"])
             flights.append(FlightInDB(**doc))
 
         return flights
